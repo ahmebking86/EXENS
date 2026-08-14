@@ -236,12 +236,15 @@ async def handle_status(query):
         acc = s.get("account") or {}
         positions = s.get("open_positions") or []
         total_profit = s.get("total_profit", 0.0)
+        positions_error = s.get("positions_error")
         txt = (
             f"الحالة: {'شغال 🟢' if s.get('running') else 'متوقف 🔴'}\n"
             f"متصل بـ MT5: {'نعم' if s.get('mt5_connected') else 'لا'}\n"
             f"الرصيد: {acc.get('balance')} {acc.get('currency','')}\n"
             f"الإيكويتي: {acc.get('equity')}\n"
         )
+        if positions_error:
+            txt += f"\nخطأ قراءة الصفقات من MT5: {positions_error}\n"
         if positions:
             txt += f"\nصفقات مفتوحة ({len(positions)}):\n"
             for p in positions:

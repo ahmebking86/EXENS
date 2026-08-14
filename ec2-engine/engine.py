@@ -394,6 +394,10 @@ def api_status(x_api_key: str = Header(None)):
     cfg = load_config()
     acc = mt5.account_info() if mt5_connected else None
     positions = mt5.positions_get() if mt5_connected else []
+    positions_error = None
+    if mt5_connected and positions is None:
+        positions_error = str(mt5.last_error())
+        positions = []
     open_positions = [
         {
             "ticket": p.ticket,
@@ -420,6 +424,8 @@ def api_status(x_api_key: str = Header(None)):
             "currency": acc.currency if acc else None,
         } if acc else None,
         "open_positions": open_positions,
+        "positions_error": positions_error,
+        "positions_count": len(open_positions),
         "total_profit": total_profit,
         "config": {k: v for k, v in cfg.items() if k not in ("mt5_password",)},
         "trades_count": len(trades),
