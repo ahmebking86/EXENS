@@ -442,7 +442,6 @@ def api_status(x_api_key: str = Header(None)):
         "last_error": last_error,
         "account_login": account_login or session_login,
         "account_server": account_server or session_server,
-        "account_server": account_server,
         "terminal_connected": terminal_connected,
         "terminal_trade_allowed": terminal_trade_allowed,
         "account": {
