@@ -467,4 +467,4 @@ def api_status(x_api_key: str = Header(None)):
 if __name__ == "__main__":
     if not os.path.exists(CONFIG_PATH):
         save_config(DEFAULT_CONFIG)
-    uvicorn.run(app, host="0.0.0.0", port=8443)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8443")))
