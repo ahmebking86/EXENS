@@ -243,6 +243,7 @@ async def handle_status(query):
             f"الرصيد: {acc.get('balance')} {acc.get('currency','')}\n"
             f"الإيكويتي: {acc.get('equity')}\n"
             f"حساب MT5: {s.get("account_login")} | السيرفر: {s.get("account_server")}\n"
+            f"نسخة المحرك: {s.get("engine_version")}\n"
         )
         if positions_error:
             txt += f"\nخطأ قراءة الصفقات من MT5: {positions_error}\n"

@@ -52,6 +52,7 @@ running_event = threading.Event()
 engine_thread = None
 mt5_connected = False
 last_error = None
+ENGINE_VERSION = "ec2-positions-diagnostics-20260814"
 session_login = None
 session_server = None
 
@@ -438,6 +439,7 @@ def api_status(x_api_key: str = Header(None)):
 
     return {
         "mt5_connected": mt5_connected,
+        "engine_version": ENGINE_VERSION,
         "running": running_event.is_set(),
         "last_error": last_error,
         "account_login": account_login or session_login,
