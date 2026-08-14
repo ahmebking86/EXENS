@@ -342,7 +342,7 @@ class StopBody(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "engine_version": ENGINE_VERSION}
 
 
 @app.post("/connect")

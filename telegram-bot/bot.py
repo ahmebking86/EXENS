@@ -188,7 +188,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "test_ec2":
         try:
             res = ec2_client.health()
-            await query.edit_message_text(f"الاتصال شغال ✅\n{res}", reply_markup=ec2_menu())
+            await query.edit_message_text(f"الاتصال شغال ✅\nالعنوان: {db.get("ec2_host")}:{db.get("ec2_port")}\n{res}", reply_markup=ec2_menu())
         except Exception as e:
             await query.edit_message_text(f"فشل الاتصال ❌\n{e}", reply_markup=ec2_menu())
         return
