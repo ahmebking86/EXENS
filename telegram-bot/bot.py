@@ -242,6 +242,7 @@ async def handle_status(query):
             f"متصل بـ MT5: {'نعم' if s.get('mt5_connected') else 'لا'}\n"
             f"الرصيد: {acc.get('balance')} {acc.get('currency','')}\n"
             f"الإيكويتي: {acc.get('equity')}\n"
+            f"حساب MT5: {s.get("account_login")} | السيرفر: {s.get("account_server")}\n"
         )
         if positions_error:
             txt += f"\nخطأ قراءة الصفقات من MT5: {positions_error}\n"

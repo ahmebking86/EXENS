@@ -393,6 +393,11 @@ def api_status(x_api_key: str = Header(None)):
     check_key(x_api_key)
     cfg = load_config()
     acc = mt5.account_info() if mt5_connected else None
+    terminal = mt5.terminal_info() if mt5_connected else None
+    account_login = getattr(acc, "login", None) if acc else None
+    account_server = getattr(acc, "server", None) if acc else None
+    terminal_connected = getattr(terminal, "connected", None) if terminal else None
+    terminal_trade_allowed = getattr(terminal, "trade_allowed", None) if terminal else None
     positions = mt5.positions_get() if mt5_connected else []
     positions_error = None
     if mt5_connected and positions is None:
@@ -422,6 +427,10 @@ def api_status(x_api_key: str = Header(None)):
         "mt5_connected": mt5_connected,
         "running": running_event.is_set(),
         "last_error": last_error,
+        "account_login": account_login,
+        "account_server": account_server,
+        "terminal_connected": terminal_connected,
+        "terminal_trade_allowed": terminal_trade_allowed,
         "account": {
             "balance": acc.balance if acc else None,
             "equity": acc.equity if acc else None,
