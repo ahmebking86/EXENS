@@ -49,9 +49,7 @@ def main_menu():
         [InlineKeyboardButton("🔌 اتصال EC2", callback_data="menu_ec2")],
         [InlineKeyboardButton("🔑 بيانات MetaTrader", callback_data="menu_mt5")],
         [InlineKeyboardButton("⚙️ إعدادات الاستراتيجية", callback_data="menu_strategy")],
-        [InlineKeyboardButton("▶️ ابدأ", callback_data="action_start"),
-         InlineKeyboardButton("⏹ إيقاف", callback_data="action_stop")],
-        [InlineKeyboardButton("📊 الحالة", callback_data="action_status")],
+        [InlineKeyboardButton("📖 قراءة الصفقات", callback_data="action_status")],
     ]
     return InlineKeyboardMarkup(kb)
 
@@ -238,7 +236,7 @@ async def handle_status(query):
         total_profit = s.get("total_profit", 0.0)
         positions_error = s.get("positions_error")
         txt = (
-            f"الحالة: {'شغال 🟢' if s.get('running') else 'متوقف 🔴'}\n"
+            "وضع القراءة فقط 🟢\n"
             f"متصل بـ MT5: {'نعم' if s.get('mt5_connected') else 'لا'}\n"
             f"الرصيد: {acc.get('balance')} {acc.get('currency','')}\n"
             f"الإيكويتي: {acc.get('equity')}\n"
