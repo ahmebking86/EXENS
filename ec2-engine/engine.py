@@ -393,7 +393,7 @@ def api_status(x_api_key: str = Header(None)):
     check_key(x_api_key)
     cfg = load_config()
     acc = mt5.account_info() if mt5_connected else None
-    positions = mt5.positions_get(symbol=cfg["symbol"]) if mt5_connected else []
+    positions = mt5.positions_get() if mt5_connected else []
     open_positions = [
         {
             "ticket": p.ticket,
