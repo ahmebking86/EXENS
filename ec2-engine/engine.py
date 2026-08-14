@@ -52,6 +52,8 @@ running_event = threading.Event()
 engine_thread = None
 mt5_connected = False
 last_error = None
+session_login = None
+session_server = None
 
 
 # ---------------------------- إدارة الإعدادات ----------------------------
@@ -87,7 +89,10 @@ def log_trade(record):
 # ---------------------------- اتصال MT5 ----------------------------
 
 def connect_mt5(login, password, server):
+    global session_login, session_server
     global mt5_connected, last_error
+    session_login = login
+    session_server = server
     if not mt5.initialize():
         last_error = f"initialize failed: {mt5.last_error()}"
         mt5_connected = False
@@ -435,7 +440,8 @@ def api_status(x_api_key: str = Header(None)):
         "mt5_connected": mt5_connected,
         "running": running_event.is_set(),
         "last_error": last_error,
-        "account_login": account_login,
+        "account_login": account_login or session_login,
+        "account_server": account_server or session_server,
         "account_server": account_server,
         "terminal_connected": terminal_connected,
         "terminal_trade_allowed": terminal_trade_allowed,
