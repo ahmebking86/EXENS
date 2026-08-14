@@ -94,28 +94,35 @@ def connect_mt5(login, password, server):
     global mt5_connected, last_error
     session_login = login
     session_server = server
-    if not mt5.initialize():
-        last_error = f"initialize failed: {mt5.last_error()}"
+    try:
+        if not mt5.initialize():
+            last_error = f"initialize failed: {mt5.last_error()}"
+            mt5_connected = False
+            return False, last_error
+        authorized = mt5.login(int(login), password=password, server=server)
+        if not authorized:
+            last_error = f"login failed: {mt5.last_error()}"
+            mt5_connected = False
+            mt5.shutdown()
+            return False, last_error
+        account_check = mt5.account_info()
+        if account_check is None:
+            last_error = f"account_info failed after login: {mt5.last_error()}"
+            mt5_connected = False
+            mt5.shutdown()
+            return False, last_error
+        mt5_connected = True
+        last_error = None
+        return True, "connected"
+    except Exception as exc:
         mt5_connected = False
+        last_error = f"connect exception: {type(exc).__name__}: {exc}"
+        try:
+            mt5.shutdown()
+        except Exception:
+            pass
+        log.exception(last_error)
         return False, last_error
-
-    authorized = mt5.login(int(login), password=password, server=server)
-    if not authorized:
-        last_error = f"login failed: {mt5.last_error()}"
-        mt5_connected = False
-        mt5.shutdown()
-        return False, last_error
-
-    account_check = mt5.account_info()
-    if account_check is None:
-        last_error = f"account_info failed after login: {mt5.last_error()}"
-        mt5_connected = False
-        mt5.shutdown()
-        return False, last_error
-    mt5_connected = True
-    last_error = None
-    return True, "connected"
-
 
 def disconnect_mt5():
     global mt5_connected
@@ -352,9 +359,13 @@ def api_connect(body: ConnectBody, x_api_key: str = Header(None)):
     cfg["mt5_login"] = body.login
     cfg["mt5_password"] = body.password
     cfg["mt5_server"] = body.server
-    save_config(cfg)
-    ok, msg = connect_mt5(body.login, body.password, body.server)
-    return {"connected": ok, "message": msg}
+    try:
+        save_config(cfg)
+        ok, msg = connect_mt5(body.login, body.password, body.server)
+        return {"connected": ok, "message": msg}
+    except Exception as exc:
+        log.exception("connect endpoint error")
+        return {"connected": False, "message": f"connect endpoint exception: {type(exc).__name__}: {exc}"}
 
 
 @app.post("/disconnect")
