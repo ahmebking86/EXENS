@@ -100,6 +100,12 @@ def connect_mt5(login, password, server):
         mt5.shutdown()
         return False, last_error
 
+    account_check = mt5.account_info()
+    if account_check is None:
+        last_error = f"account_info failed after login: {mt5.last_error()}"
+        mt5_connected = False
+        mt5.shutdown()
+        return False, last_error
     mt5_connected = True
     last_error = None
     return True, "connected"
@@ -394,10 +400,12 @@ def api_status(x_api_key: str = Header(None)):
     cfg = load_config()
     acc = mt5.account_info() if mt5_connected else None
     terminal = mt5.terminal_info() if mt5_connected else None
-    account_login = getattr(acc, "login", None) if acc else None
-    account_server = getattr(acc, "server", None) if acc else None
-    terminal_connected = getattr(terminal, "connected", None) if terminal else None
-    terminal_trade_allowed = getattr(terminal, "trade_allowed", None) if terminal else None
+    account_map = acc._asdict() if acc is not None and hasattr(acc, "_asdict") else {}
+    terminal_map = terminal._asdict() if terminal is not None and hasattr(terminal, "_asdict") else {}
+    account_login = account_map.get("login", getattr(acc, "login", None) if acc else None)
+    account_server = account_map.get("server", getattr(acc, "server", None) if acc else None)
+    terminal_connected = terminal_map.get("connected", getattr(terminal, "connected", None) if terminal else None)
+    terminal_trade_allowed = terminal_map.get("trade_allowed", getattr(terminal, "trade_allowed", None) if terminal else None)
     positions = mt5.positions_get() if mt5_connected else []
     positions_error = None
     if mt5_connected and positions is None:
