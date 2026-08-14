@@ -251,6 +251,8 @@ async def handle_status(query):
                 txt += f"  • {p['direction']} {p['volume']} @ {p['open_price']} | ربح: {p['profit']}\n"
             txt += f"\nإجمالي الربح الحالي: {total_profit:.2f}\n"
         else:
+            if not positions_error:
+                txt += f"\nتشخيص MT5: raw={s.get("positions_count", 0)} | الرموز={s.get("positions_symbols") or "لا يوجد"} | أوامر معلقة={s.get("pending_orders_count", 0)}\n"
             txt += "\nمفيش صفقات مفتوحة حالياً.\n"
         txt += f"\nعدد الصفقات المسجلة: {s.get('trades_count')}"
         await query.edit_message_text(txt, reply_markup=main_menu())

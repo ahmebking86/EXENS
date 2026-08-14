@@ -398,6 +398,10 @@ def api_status(x_api_key: str = Header(None)):
     if mt5_connected and positions is None:
         positions_error = str(mt5.last_error())
         positions = []
+    positions_symbols = sorted({getattr(p, "symbol", "?") for p in positions}) if positions else []
+    pending_orders = mt5.orders_get() if mt5_connected else []
+    pending_orders_error = None if not mt5_connected or pending_orders is not None else str(mt5.last_error())
+    pending_orders_count = len(pending_orders) if pending_orders else 0
     open_positions = [
         {
             "ticket": p.ticket,
@@ -426,6 +430,9 @@ def api_status(x_api_key: str = Header(None)):
         "open_positions": open_positions,
         "positions_error": positions_error,
         "positions_count": len(open_positions),
+        "positions_symbols": positions_symbols,
+        "pending_orders_count": pending_orders_count,
+        "pending_orders_error": pending_orders_error,
         "total_profit": total_profit,
         "config": {k: v for k, v in cfg.items() if k not in ("mt5_password",)},
         "trades_count": len(trades),
