@@ -123,10 +123,18 @@ async def main():
     logger.info("Bot started. Add bot as admin to your Whale Alert forward channel.")
     await app.initialize()
     await app.start()
-    await app.updater.start_polling(drop_pending_updates=True)
-
     stop = asyncio.Event()
-    await stop.wait()
+    while True:
+        try:
+            await app.updater.start_polling(drop_pending_updates=True)
+            await stop.wait()
+            break
+        except NetworkError as exc:
+            logger.warning(f"Telegram network interruption; retrying in 10 seconds: {exc}")
+            await asyncio.sleep(10)
+        except Exception:
+            logger.exception("Telegram polling stopped unexpectedly; retrying in 10 seconds")
+            await asyncio.sleep(10)
 
 
 if __name__ == "__main__":
