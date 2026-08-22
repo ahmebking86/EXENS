@@ -8,6 +8,7 @@ EXENS Auto - Fully automatic Institutional Flow Bot
 import asyncio
 from loguru import logger
 from telegram.ext import Application, MessageHandler, filters
+from telegram.error import NetworkError
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 import config.settings as config
@@ -102,7 +103,13 @@ async def main():
     if not get_config("paper_balance"):
         set_config("paper_balance", "1000")
 
-    app = Application.builder().token(config.TG_TOKEN).build()
+    app = (Application.builder().token(config.TG_TOKEN)
+           .connect_timeout(30)
+           .read_timeout(30)
+           .write_timeout(30)
+           .pool_timeout(30)
+           .http_version("1.1")
+           .build())
     setup_handlers(app)
 
     # Listen to channel posts (bot must be admin in the channel)
